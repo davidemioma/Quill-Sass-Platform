@@ -1,6 +1,7 @@
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
 import { Nunito_Sans } from "next/font/google";
 
 const font = Nunito_Sans({ subsets: ["latin"] });
@@ -23,6 +24,8 @@ export default function RootLayout({
           font.className
         )}
       >
+        <Navbar />
+
         {children}
       </body>
     </html>
