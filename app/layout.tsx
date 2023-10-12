@@ -1,4 +1,5 @@
 import "./globals.css";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
 
@@ -16,7 +17,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={font.className}>{children}</body>
+      <body
+        className={cn(
+          "min-h-screen font-sans antialiased grainy",
+          font.className
+        )}
+      >
+        {children}
+      </body>
     </html>
   );
 }
