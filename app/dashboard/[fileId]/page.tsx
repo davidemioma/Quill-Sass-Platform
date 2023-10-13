@@ -1,9 +1,14 @@
 import prismadb from "@/lib/prismadb";
-import { redirect } from "next/navigation";
-import Dashboard from "@/components/Dashboard";
+import { notFound, redirect } from "next/navigation";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export default async function DashboardPage() {
+export default async function FilePage({
+  params,
+}: {
+  params: { fileId: string };
+}) {
+  const { fileId } = params;
+
   const { getUser } = getKindeServerSession();
 
   const user = getUser();
@@ -12,15 +17,16 @@ export default async function DashboardPage() {
     return redirect("/auth-callback?origin=dashboard");
   }
 
-  const dbUser = await prismadb.user.findUnique({
+  const file = await prismadb.file.findUnique({
     where: {
+      id: fileId,
       userId: user.id,
     },
   });
 
-  if (!dbUser) {
-    return redirect("/auth-callback?origin=dashboard");
+  if (!file) {
+    return notFound();
   }
 
-  return <Dashboard />;
+  return <div>File Page {fileId}</div>;
 }

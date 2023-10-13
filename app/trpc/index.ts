@@ -1,6 +1,7 @@
-import { TRPCError } from "@trpc/server";
+import z from "zod";
 import prismadb from "@/lib/prismadb";
-import { publicProcedure, router } from "./trpc";
+import { TRPCError } from "@trpc/server";
+import { privateProcedure, publicProcedure, router } from "./trpc";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export const appRouter = router({
@@ -32,6 +33,47 @@ export const appRouter = router({
 
     return { success: true };
   }),
+
+  getUserFiles: privateProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx;
+
+    return await prismadb.file.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }),
+
+  deleteFile: privateProcedure
+    .input(z.object({ fileId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+
+      const { fileId } = input;
+
+      const file = await prismadb.file.findUnique({
+        where: {
+          id: fileId,
+          userId,
+        },
+      });
+
+      if (!file) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      await prismadb.file.delete({
+        where: {
+          id: fileId,
+          userId,
+        },
+      });
+
+      return { success: true };
+    }),
 });
 
 export type AppRouter = typeof appRouter;

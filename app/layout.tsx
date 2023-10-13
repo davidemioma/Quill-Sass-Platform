@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import { Nunito_Sans } from "next/font/google";
 import Providers from "@/components/Providers";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const font = Nunito_Sans({ subsets: ["latin"] });
 
