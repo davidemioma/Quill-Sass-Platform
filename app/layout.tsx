@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import { Nunito_Sans } from "next/font/google";
+import Providers from "@/components/Providers";
 
 const font = Nunito_Sans({ subsets: ["latin"] });
 
@@ -24,9 +25,11 @@ export default function RootLayout({
           font.className
         )}
       >
-        <Navbar />
+        <Providers>
+          <Navbar />
 
-        {children}
+          {children}
+        </Providers>
       </body>
     </html>
   );

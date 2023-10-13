@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+//npm i -D prisma
+//npx prisma init
+//npx prisma generate - Do this after creating a new model
+//npx prisma db push - to push to your database.
+//npx prisma migrate reset - to reset your databse.
+//npx prisma studio - to view your data
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique
+  email String @unique
+  stripeCustomerId       String? @unique @map(name: "stripe_customer_id")
+  stripeSubscriptionId   String? @unique @map(name: "stripe_subscription_id")
+  stripePriceId          String? @unique @map(name: "stripe_price_id")
+  stripeCurrentPeriodEnd DateTime? @unique @map(name: "stripe_current_period_end")
+}
+
