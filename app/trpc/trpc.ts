@@ -1,5 +1,6 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import prismadb from "@/lib/prismadb";
 
 const t = initTRPC.create();
 
@@ -14,9 +15,19 @@ const isAuth = middleware(async (opts) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
+  const dbUser = await prismadb.user.findUnique({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (!dbUser) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
   return opts.next({
     ctx: {
-      userId: user.id,
+      userId: dbUser.id,
       user,
     },
   });

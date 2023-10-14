@@ -33,11 +33,10 @@ export const appRouter = router({
 
     return { success: true };
   }),
-
   getUserFiles: privateProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;
 
-    return await prismadb.file.findMany({
+    const files = await prismadb.file.findMany({
       where: {
         userId,
       },
@@ -45,8 +44,29 @@ export const appRouter = router({
         createdAt: "desc",
       },
     });
-  }),
 
+    return files;
+  }),
+  getFile: privateProcedure
+    .input(z.object({ key: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+
+      const { key } = input;
+
+      const file = await prismadb.file.findFirst({
+        where: {
+          userId,
+          key,
+        },
+      });
+
+      if (!file) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return file;
+    }),
   deleteFile: privateProcedure
     .input(z.object({ fileId: z.string() }))
     .mutation(async ({ ctx, input }) => {
