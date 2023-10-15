@@ -122,6 +122,9 @@ const UploadDropzone = () => {
                   <Progress
                     className="h-1 w-full bg-zinc-200"
                     value={uploadProgress}
+                    indicatorColor={
+                      uploadProgress === 100 ? "bg-green-500" : ""
+                    }
                   />
 
                   {uploadProgress === 100 && (

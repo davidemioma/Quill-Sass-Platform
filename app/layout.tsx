@@ -4,8 +4,10 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import { Nunito_Sans } from "next/font/google";
 import Providers from "@/components/Providers";
-import "react-loading-skeleton/dist/skeleton.css";
 import { Toaster } from "@/components/ui/toaster";
+
+import "react-loading-skeleton/dist/skeleton.css";
+import "simplebar-react/dist/simplebar.min.css";
 
 const font = Nunito_Sans({ subsets: ["latin"] });
 
