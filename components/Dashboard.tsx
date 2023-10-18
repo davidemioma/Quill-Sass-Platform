@@ -6,17 +6,24 @@ import { format } from "date-fns";
 import UploadBtn from "./UploadBtn";
 import { Button } from "./ui/button";
 import { trpc } from "@/lib/_trpcClient";
+import { useRouter } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
 import { Ghost, Loader2, MessageSquare, Plus, TrashIcon } from "lucide-react";
 
 const Dashboard = () => {
+  const router = useRouter();
+
+  const utils = trpc.useContext();
+
   const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
 
   const { data: files, isLoading } = trpc.getUserFiles.useQuery();
 
   const { mutate: deleteFile } = trpc.deleteFile.useMutation({
     onSuccess: () => {
-      trpc.useContext().getUserFiles.invalidate(); //Make it refetch the getUserFiles endpoint.
+      utils.getUserFiles.invalidate(); //Make it refetch the getUserFiles endpoint.
+
+      router.refresh();
     },
     onMutate: ({ fileId }) => {
       setDeletingFileId(fileId);

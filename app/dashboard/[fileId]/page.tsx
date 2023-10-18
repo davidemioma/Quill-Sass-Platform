@@ -1,7 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import PdfRenderer from "@/components/PdfRenderer";
 import { notFound, redirect } from "next/navigation";
-import PdfChatWrapper from "@/components/PdfChatWrapper";
+import PdfChatWrapper from "@/components/chat/PdfChatWrapper";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export default async function FilePage({
@@ -51,7 +51,7 @@ export default async function FilePage({
           </div>
 
           <div className="shrink-0 flex-[0.75] border-t border-gray-200 lg:w-96 lg:border-l lg:border-t-0">
-            <PdfChatWrapper />
+            <PdfChatWrapper fileId={file.id} />
           </div>
         </div>
       </div>
