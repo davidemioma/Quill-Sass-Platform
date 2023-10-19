@@ -6,6 +6,7 @@ import Messages from "./Messages";
 import ChatInput from "./ChatInput";
 import { trpc } from "@/lib/_trpcClient";
 import { buttonVariants } from "../ui/button";
+import { ChatProvider } from "@/context/ChatProvider";
 import { ChevronLeft, Loader2, XCircle } from "lucide-react";
 
 interface Props {
@@ -93,13 +94,15 @@ const PdfChatWrapper = ({ fileId }: Props) => {
   }
 
   return (
-    <div className="relative bg-zinc-50 min-h-full flex flex-col justify-between gap-2 divide-y divide-zinc-200">
-      <div className="flex-1 flex flex-col justify-between mb-28">
-        <Messages fileId={fileId} />
-      </div>
+    <ChatProvider fileId={fileId}>
+      <div className="relative bg-zinc-50 min-h-full flex flex-col justify-between gap-2 divide-y divide-zinc-200">
+        <div className="flex-1 flex flex-col justify-between mb-28">
+          <Messages fileId={fileId} />
+        </div>
 
-      <ChatInput />
-    </div>
+        <ChatInput />
+      </div>
+    </ChatProvider>
   );
 };
 

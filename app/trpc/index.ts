@@ -1,6 +1,7 @@
 import z from "zod";
 import prismadb from "@/lib/prismadb";
 import { TRPCError } from "@trpc/server";
+import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 import { privateProcedure, publicProcedure, router } from "./trpc";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
@@ -86,6 +87,60 @@ export const appRouter = router({
       }
 
       return { status: file.uploadStatus };
+    }),
+  getFileMessages: privateProcedure
+    .input(
+      z.object({
+        fileId: z.string(),
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.string().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userId } = ctx;
+
+      const { fileId, cursor } = input;
+
+      const limit = input.limit || INFINITE_QUERY_LIMIT;
+
+      const file = await prismadb.file.findUnique({
+        where: {
+          id: fileId,
+          userId,
+        },
+      });
+
+      if (!file) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      const messages = await prismadb.message.findMany({
+        where: {
+          fileId,
+          userId,
+        },
+        take: limit + 1,
+        orderBy: {
+          createdAt: "desc",
+        },
+        cursor: cursor ? { id: cursor } : undefined,
+        select: {
+          id: true,
+          text: true,
+          isUserMessage: true,
+          createdAt: true,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+
+      if (messages.length > limit) {
+        const nextItem = messages.pop();
+
+        nextCursor = nextItem?.id;
+      }
+
+      return { messages, nextCursor };
     }),
   deleteFile: privateProcedure
     .input(z.object({ fileId: z.string() }))

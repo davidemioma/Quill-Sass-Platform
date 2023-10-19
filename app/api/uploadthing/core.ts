@@ -79,7 +79,7 @@ const onUploadComplete = async ({ metadata, file }: OnCompleteProps) => {
 
     await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
       pineconeIndex,
-      // namespace: createdFile.id, //For upgraded plans only
+      namespace: createdFile.id, //For upgraded plans only //1536
     });
 
     await prismadb.file.update({
