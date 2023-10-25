@@ -50,7 +50,6 @@ export async function POST(request: Request) {
     });
 
     //Vectorize message
-
     const pineconeIndex = pinecone.Index("quill");
 
     const embeddings = new OpenAIEmbeddings({
