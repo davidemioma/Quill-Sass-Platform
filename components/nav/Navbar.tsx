@@ -10,6 +10,7 @@ import {
   RegisterLink,
   getKindeServerSession,
 } from "@kinde-oss/kinde-auth-nextjs/server";
+import LogoutBtn from "./LogoutBtn";
 
 const Navbar = () => {
   const { getUser } = getKindeServerSession();
@@ -24,7 +25,16 @@ const Navbar = () => {
             <span>Quill.</span>
           </Link>
 
-          <MobileNav isAuth={!!user} />
+          <div className="sm:hidden flex items-center">
+            <MobileNav isAuth={!!user} />
+
+            {user && (
+              <button className="text-sm">
+                {/* @ts-ignore */}
+                <LogoutBtn />
+              </button>
+            )}
+          </div>
 
           <div className="hidden sm:flex items-center gap-4">
             {user ? (

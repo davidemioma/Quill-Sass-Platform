@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Menu } from "lucide-react";
+import LogoutBtn from "./LogoutBtn";
 
 interface Props {
   isAuth: boolean;
@@ -16,20 +17,20 @@ const MobileNav = ({ isAuth }: Props) => {
 
   const toggleOpen = () => setOpen((prev) => !prev);
 
-  const closeOnCurrent = (href: string) => {
-    if (pathname === href) {
-      toggleOpen();
-    }
-  };
-
   useEffect(() => {
     if (isOpen) {
       toggleOpen();
     }
   }, [pathname]);
 
+  const closeOnCurrent = (href: string) => {
+    if (pathname === href) {
+      toggleOpen();
+    }
+  };
+
   return (
-    <div className="sm:hidden">
+    <>
       <Menu
         onClick={toggleOpen}
         className="relative z-50 h-5 w-5 text-zinc-700"
@@ -88,21 +89,12 @@ const MobileNav = ({ isAuth }: Props) => {
                 </li>
 
                 <li className="my-3 h-px w-full bg-gray-300" />
-
-                <li>
-                  <Link
-                    className="flex items-center w-full font-semibold"
-                    href="/sign-out"
-                  >
-                    Sign out
-                  </Link>
-                </li>
               </>
             )}
           </ul>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

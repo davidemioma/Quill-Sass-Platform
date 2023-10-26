@@ -1,20 +1,17 @@
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
+
 import Navbar from "@/components/nav/Navbar";
 import { Nunito_Sans } from "next/font/google";
 import Providers from "@/components/Providers";
 import { Toaster } from "@/components/ui/toaster";
+import { cn, constructMetadata } from "@/lib/utils";
 
 import "react-loading-skeleton/dist/skeleton.css";
 import "simplebar-react/dist/simplebar.min.css";
 
 const font = Nunito_Sans({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Quill",
-  description: "Quill Saas Platform",
-};
+export const metadata = constructMetadata();
 
 export default function RootLayout({
   children,
