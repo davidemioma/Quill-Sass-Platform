@@ -1,10 +1,12 @@
 import prismadb from "@/lib/prismadb";
+import { PLANS } from "@/config/stripe";
 import { pinecone } from "@/lib/pinecone";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUserSubscriptionPlan } from "@/app/actions/getUserSubscriptionPlan";
 
 const f = createUploadthing();
 
@@ -21,7 +23,9 @@ const handleAuth = async () => {
     },
   });
 
-  return { userId: dbUser?.id };
+  const subscriptionPlan = await getUserSubscriptionPlan();
+
+  return { subscriptionPlan, userId: dbUser?.id };
 };
 
 type OnCompleteProps = {
@@ -43,7 +47,7 @@ const onUploadComplete = async ({ metadata, file }: OnCompleteProps) => {
 
   if (fileExist) return;
 
-  if (!metadata.userId) return;
+  if (!metadata.userId || !metadata.subscriptionPlan) return;
 
   const createdFile = await prismadb.file.create({
     data: {
@@ -54,6 +58,7 @@ const onUploadComplete = async ({ metadata, file }: OnCompleteProps) => {
       uploadStatus: "PROCESSING",
     },
   });
+
   try {
     //Getting the pdf from uploadthing
     const res = await fetch(
@@ -69,6 +74,27 @@ const onUploadComplete = async ({ metadata, file }: OnCompleteProps) => {
 
     //Number of pages in your Pdf doc
     const pagesAmt = pageLevelDocs.length;
+
+    const { subscriptionPlan } = metadata;
+
+    const { isSubscribed } = subscriptionPlan;
+
+    const isProExceeded =
+      pagesAmt > PLANS.find((plan) => plan.name === "Pro")!.pagesPerPdf;
+
+    const isFreeExceeded =
+      pagesAmt > PLANS.find((plan) => plan.name === "Free")!.pagesPerPdf;
+
+    if ((isSubscribed && isProExceeded) || (!isSubscribed && isFreeExceeded)) {
+      await prismadb.file.update({
+        where: {
+          id: createdFile.id,
+        },
+        data: {
+          uploadStatus: "FAILED",
+        },
+      });
+    }
 
     // vectorize and index entire document
     const pineconeIndex = pinecone.Index("quill");

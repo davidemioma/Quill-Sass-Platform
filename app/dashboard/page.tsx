@@ -2,6 +2,7 @@ import prismadb from "@/lib/prismadb";
 import { redirect } from "next/navigation";
 import Dashboard from "@/components/Dashboard";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUserSubscriptionPlan } from "../actions/getUserSubscriptionPlan";
 
 export default async function DashboardPage() {
   const { getUser } = getKindeServerSession();
@@ -22,5 +23,7 @@ export default async function DashboardPage() {
     return redirect("/auth-callback?origin=dashboard");
   }
 
-  return <Dashboard />;
+  const subscriptionPlan = await getUserSubscriptionPlan();
+
+  return <Dashboard subscriptionPlan={subscriptionPlan} />;
 }

@@ -9,8 +9,13 @@ import { trpc } from "@/lib/_trpcClient";
 import { useRouter } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
 import { Ghost, Loader2, MessageSquare, Plus, TrashIcon } from "lucide-react";
+import { getUserSubscriptionPlan } from "@/app/actions/getUserSubscriptionPlan";
 
-const Dashboard = () => {
+interface Props {
+  subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>;
+}
+
+const Dashboard = ({ subscriptionPlan }: Props) => {
   const router = useRouter();
 
   const utils = trpc.useContext();
@@ -38,7 +43,7 @@ const Dashboard = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 pt-8 pb-5 border-b border-gray-200">
         <h1 className="mb-3 font-bold text-5xl text-gray-900">My Files</h1>
 
-        <UploadBtn />
+        <UploadBtn isSubscribed={subscriptionPlan.isSubscribed} />
       </div>
 
       {files && files?.length > 0 ? (

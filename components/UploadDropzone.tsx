@@ -9,7 +9,11 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { Progress } from "@/components/ui/progress";
 import { Cloud, File, Loader2 } from "lucide-react";
 
-const UploadDropzone = () => {
+interface Props {
+  isSubscribed: boolean;
+}
+
+const UploadDropzone = ({ isSubscribed }: Props) => {
   const router = useRouter();
 
   const { toast } = useToast();
@@ -18,7 +22,9 @@ const UploadDropzone = () => {
 
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const { startUpload } = useUploadThing("freePlanUploader");
+  const { startUpload } = useUploadThing(
+    isSubscribed ? "proPlanUploader" : "freePlanUploader"
+  );
 
   const { mutate: startPolling } = trpc.getFile.useMutation({
     onSuccess: (file) => {
@@ -102,7 +108,9 @@ const UploadDropzone = () => {
                   and drop
                 </p>
 
-                <p className="text-xs text-zinc-500">PDF (up to 4MB)</p>
+                <p className="text-xs text-zinc-500">
+                  PDF (up to {isSubscribed ? "16" : "4"}MB)
+                </p>
               </div>
 
               {acceptedFiles && acceptedFiles[0] ? (
