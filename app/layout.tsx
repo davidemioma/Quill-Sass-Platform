@@ -1,7 +1,7 @@
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/nav/Navbar";
 import { Nunito_Sans } from "next/font/google";
 import Providers from "@/components/Providers";
 import { Toaster } from "@/components/ui/toaster";
@@ -34,7 +34,7 @@ export default function RootLayout({
 
           <Navbar />
 
-          {children}
+          <div className="px-2.5 md:px-0">{children}</div>
         </Providers>
       </body>
     </html>

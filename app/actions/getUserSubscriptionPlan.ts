@@ -8,7 +8,7 @@ export const getUserSubscriptionPlan = async () => {
 
   const user = getUser();
 
-  if (!user.id) {
+  if (!user || !user.id) {
     return {
       ...PLANS[0],
       isSubscribed: false,
@@ -17,7 +17,7 @@ export const getUserSubscriptionPlan = async () => {
     };
   }
 
-  const dbUser = await prismadb.user.findFirst({
+  const dbUser = await prismadb.user.findUnique({
     where: {
       userId: user.id,
     },
